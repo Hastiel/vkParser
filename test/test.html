@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="u">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" /> 
+    <link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqgrid.css" />
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.min.js"></script>
+    <script src="jquery.jqGrid.min.js"></script>
+</head>
+
+<body>
+
+<table id="table"></table>
+
+    <script>
+$(document).ready(function(){
+    var table = $("#table");
+    var colNames = ['id','Дата','Количество посещений'];
+    var colModel = [
+       { name:'id', index:'id', width:60, align:'center', sorttype:"int" },
+       { name:'date', index:'date', width:120, align:'center', sorttype:"string" },
+       { name:'count', index:'count', width:120, align:"right", sorttype:"float" }
+    ];
+
+    table.jqGrid({
+        datatype: "local",
+        scrollrows: true,
+        sortname: 'id', 
+        viewrecords: true,
+        loadonce: true,
+        gridview: true,
+        height: 'auto',
+        loadtext: 'Выполняется операция',
+        rowNum: 500,
+        autowidth: true,
+        emptyrecords: 'Нет данных',
+        colNames: colNames,
+        colModel: colModel
+    });
+    
+   
+    var reportData = [
+        {'id':'1', 'date':'14','count':'147'},
+        {'id':'2', 'date':'15','count':'113'},
+        {'id':'3', 'date':'16','count':'134'},
+        {'id':'4', 'date':'17','count':'141'},
+        {'id':'5', 'date':'18','count':'121'},
+        {'id':'6', 'date':'19','count':'142'},
+        {'id':'7', 'date':'20','count':'173'},
+        {'id':'8', 'date':'21','count':'180'},
+        {'id':'9', 'date':'22','count':'169'},
+        {'id':'10', 'date':'23','count':'124'},
+        {'id':'11', 'date':'24','count':'106'},
+        {'id':'12', 'date':'25','count':'75'},
+        {'id':'13', 'date':'26','count':'107'},
+        {'id':'14', 'date':'27','count':'107'}
+    ];  
+
+    function renderData2Grid(table, reportData) {
+    	table.jqGrid( 'clearGridData' );
+	    for (var key in reportData) {
+		    table.jqGrid( 'addRowData', key, reportData[key] );
+    	}
+    }
+
+    renderData2Grid(table, reportData)
+
+});
+    </script>
+
+
+
+</body>
+
+</html>

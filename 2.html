@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>sewqeqew</title>
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script> 
+	</head>
+	<body>
+		<p/>
+		<script>
+
+	var VK_REQUEST_COUNT = 10;
+	$(document).ready(function () {
+		var postsCounter = 1;
+
+		for( var offset = 0; offset < postsCounter; offset+= VK_REQUEST_COUNT)
+		{
+			$.ajax({
+				url: 'http://api.vk.com/method/wall.get?v=5.7&filter=all&domain=mdk&count=' + VK_REQUEST_COUNT +'&offset='+offset,
+				dataType: "jsonp",
+				success: function (data) {
+					linkOnPost(data);
+				}
+        }).then();
+
+		}
+		setTimeout(printRes, 1000);
+
+	});
+	var posts = [];
+	var linkOnPost = function(data){
+	  for(var index = 0; index < VK_REQUEST_COUNT; index++){
+		var post = new Object();
+		var ownerId = data.response.items[index].attachments[0].photo["owner_id"];
+		var id = data.response.items[index].attachments[0].photo["id"];
+		var url = data.response.items[index].attachments[0].photo["photo_807"];
+		if (url == null){
+			url = data.response.items[index].attachments[0].photo["photo_604"];
+		}
+		//console.log(mas);
+		//var result = key.match( /photo_\d+/ig );
+		//if (result != null){
+		//console.log(result);
+		//url = data.response.items[index].attachments[0].photo[result[result.length]];
+		//}
+		
+		console.log(url);
+		//url = data.response.items[index].attachments[0].photo['photo_1280'];
+		}
+		
+		var likeCount = data.response.items[index].likes.count;
+		var repostCount = data.response.items[index].reposts.count;
+		post.url = url;
+		post.likeCount = likeCount;
+		post.repostCount = repostCount;
+		posts.push(post);
+	  
+
+	}
+
+		var table=document.createElement("table");
+		table.setAttribute("border", "2px");
+
+	
+	var printRes = function()
+	{		
+		for(var i = 0;i < posts.length;i++){
+			newRow=table.insertRow(i);
+			var count = 0;
+			
+				for (var text in posts[i]){
+				newCell = newRow.insertCell(count);
+				count ++;
+					var value = posts[i][text];
+					if (count == 1){
+						newCell.innerHTML="<a href=" + value +" target=blank>курлык</a>";
+						} else {newCell.innerHTML=value;}
+				}
+		}
+
+		document.body.appendChild(table);
+	}	
+
+		</script>
+	</body>
+</html>

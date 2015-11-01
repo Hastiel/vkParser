@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>Генератор</title>
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script> 
+		<link rel="stylesheet" type="text/css" href="css/style.css" media="screen" /> 
+    <link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqgrid.css" />
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.min.js"></script>
+    <script src="jquery.jqGrid.min.js"></script>
+	</head>
+	<body>
+Введите название VK паблика <p/>
+		<input type="text" id="publicName" value="mdk"/> <p/>
+
+		<button id="makeRequest">Вперед!</button>
+		
+<table id="table"></table>
+
+		<script type="text/javascript">
+		//var nameOfPublic = '';
+		$(document).ready( function () {
+			$("#makeRequest").click(function(){
+			var nameOfPublic = $('#publicName').val();
+				requestToServer(nameOfPublic);
+			});
+			});
+
+			var requestToServer = function(nameOfPublic){
+			var offset = 0;
+			for(offset; offset < 10; offset++){
+				$.ajax({
+				url: 'http://api.vk.com/method/wall.get?v=5.7&filter=all&domain='+ nameOfPublic +'&count=1&offset=' + offset,
+				success: function (data) {
+					linkOnPost(data);
+				},
+				dataType: "jsonp"
+				});
+				}
+			};
+			
+			var posts = [];
+	var linkOnPost = function(data){
+	  for(var index = 0; index < 100; index++){
+		try{
+		//if 
+		var post = new Object();
+		var ownerId = data.response.items[index].attachments[0].photo["owner_id"];
+		var id = data.response.items[index].attachments[0].photo["id"];
+		var url = data.response.items[index].attachments[0].photo["photo_807"];
+		if (url == null){
+			url = data.response.items[index].attachments[0].photo["photo_604"];
+		}		
+		var text = data.response.items[index].text;
+		var likeCount = data.response.items[index].likes.count;
+		var repostCount = data.response.items[index].reposts.count;
+		post.url = url;
+		post.likeCount = likeCount;
+		post.repostCount = repostCount;
+		post.text = text;
+		posts.push(post);
+		}
+		catch(ERR){continue}
+	  }
+	  printRes();
+	  
+	}
+	
+	var printRes = function()
+	{
+	console.log(posts[0]);
+	  
+	  var table = $("#table");
+    var colNames = ['URL','Likes'];
+    var colModel = [
+       { name:'url', index:'url', width:600, align:'center', formatter:nameLinkFormatter, sorting:'false'},
+       { name:'likeCount', index:'likeCount', width:120, align:'center', sorttype:'int'}
+    ];
+
+    table.jqGrid({
+        datatype: "local",
+        scrollrows: true,
+        sortname: 'id', 
+        viewrecords: true,
+        loadonce: true,
+        gridview: true,
+        height: 'auto',
+        loadtext: 'Выполняется операция',
+        rowNum: 500,
+        autowidth: true,
+        emptyrecords: 'Нет данных',
+        colNames: colNames,
+        colModel: colModel
+    });
+ 
+
+    function renderData2Grid(table, posts) {
+    	table.jqGrid( 'clearGridData' );
+	    for (var key in posts) {
+		    table.jqGrid( 'addRowData', key, posts[key] );
+    	}
+    }
+
+    renderData2Grid(table, posts)
+	}
+	
+	function nameLinkFormatter(cellValue) 
+  {
+    return '<a href=' + cellValue + '>' +
+          cellValue + '</a>';
+  }
+	
+		</script>
+	</body>
+</html>
